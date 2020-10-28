@@ -6,6 +6,7 @@ public class Enemy : MonoBehaviour
 {
     public GameObject Player;
     public GameObject sightDirection;
+    public float panicRange;
     public float aggroRange;
     public float speed;
 
@@ -35,6 +36,9 @@ public class Enemy : MonoBehaviour
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(sightDirection.transform.position, aggroRange);//utilidade para visualizar range de aggro
+
+        Gizmos.color = Color.blue;
+        Gizmos.DrawWireSphere(gameObject.transform.position, panicRange);//utilidade pra saber quando jogador deve panickar
     }
     void OnCollisionEnter2D(Collision2D other)
     {
@@ -45,6 +49,14 @@ public class Enemy : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))
         {
             text.SetActive(true);
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("RoomLimiter"))
+        {
+            speed = -speed;
         }
     }
 }

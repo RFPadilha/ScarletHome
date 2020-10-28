@@ -32,16 +32,27 @@ public class PanicMinigame : MonoBehaviour
     //fim das variáveis de progresso de panico
 
     //variáveis auxiliares
-    bool pause = false;
+    bool pause;
     [SerializeField] float failTimer = 1000f;
+    Enemy enemyScript;
+    public GameObject Player;
+    public GameObject Enemy;
+    float currentDistance;
 
     void Start()
     {
         barSize = playerControl.localScale.x;
+        pause = true;
+        enemyScript = FindObjectOfType<Enemy>();
     }
 
     void Update()
     {
+        currentDistance = Vector2.Distance(Player.transform.position, Enemy.transform.position);
+        if (currentDistance <= enemyScript.panicRange)//ativa barra de panico se a criatura estiver muito perto
+        {
+            pause = false;
+        }
         if (pause) {
             this.gameObject.SetActive(false);
             return; 
@@ -57,10 +68,11 @@ public class PanicMinigame : MonoBehaviour
         {
             barMoveVelocity -= barMovePower * Time.deltaTime;
         } 
-        else if (Input.GetMouseButton(1))//move para a esquerda
+        if (Input.GetMouseButton(1))//move para a esquerda
         {
             barMoveVelocity += barMovePower * Time.deltaTime;
         }
+
 
         barPosition += barMoveVelocity;
 

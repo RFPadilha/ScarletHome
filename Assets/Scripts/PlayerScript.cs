@@ -9,9 +9,9 @@ public class PlayerScript : MonoBehaviour
     //Animator m_Animator;
 
     //movement variables
-    float horMove = 0f;
-    float runSpeed;
-    float stealthSpeed;
+    public float horMove = 0f;
+    public float runSpeed;
+    public float stealthSpeed;
     public float maxSpeed;
 
     //hiding variables
@@ -22,14 +22,15 @@ public class PlayerScript : MonoBehaviour
     //transition variables
     public bool canTeleport;
     TeleportScript teleport;
+
+    
     void Start()
     {
         m_Rigidbody = GetComponent<Rigidbody2D>();
         //m_Animator = GetComponent<Animator>();
         rend = GetComponentInChildren<SpriteRenderer>();
 
-        runSpeed = maxSpeed * 2;
-        stealthSpeed = maxSpeed / 2;
+        
 
         canHide = false;
         isHidden = false;
@@ -123,4 +124,20 @@ public class PlayerScript : MonoBehaviour
         }
 
     }
+    /*Save/Load code section, must go on game manager
+    public void SavePlayer()
+    {
+        SaveSystem.savePlayer(this);
+    }
+
+    public void LoadPlayer()
+    {
+        PlayerData data = SaveSystem.loadPlayer();
+        Vector2 position;
+        position.x = data.playerPos[0];
+        position.y = data.playerPos[1];
+
+        transform.position = position;
+    }
+    */
 }

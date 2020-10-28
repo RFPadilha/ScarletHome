@@ -10,6 +10,7 @@ TagManager:
   - Item
   - Transition
   - Bounds
+  - RoomLimiter
   layers:
   - Default
   - TransparentFX

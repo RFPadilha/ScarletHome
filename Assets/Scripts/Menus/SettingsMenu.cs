@@ -13,6 +13,6 @@ public class SettingsMenu : MonoBehaviour
 
     public void SetFullscreen(bool isFullscreen)
     {
-        Screen.fullScreen = isFullscreen;x
+        Screen.fullScreen = isFullscreen;
     }
 }

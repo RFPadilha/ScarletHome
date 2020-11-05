@@ -21,15 +21,16 @@ public class PlayerScript : MonoBehaviour
 
     //transition variables
     public bool canTeleport;
+    public bool facingRight;
+    public Animator m_Animator;
     TeleportScript teleport;
 
     
     void Start()
     {
         m_Rigidbody = GetComponent<Rigidbody2D>();
-        //m_Animator = GetComponent<Animator>();
+        m_Animator = GetComponent<Animator>();
         rend = GetComponentInChildren<SpriteRenderer>();
-
         
 
         canHide = false;
@@ -39,6 +40,7 @@ public class PlayerScript : MonoBehaviour
     void Update()
     {
         horMove = Input.GetAxisRaw("Horizontal");
+        facingRight = false;
         Hide();
 
     }
@@ -46,6 +48,7 @@ public class PlayerScript : MonoBehaviour
     void FixedUpdate()
     {
         Movement();
+        Flip();
         Teleport();
     }
     void Movement()
@@ -59,8 +62,10 @@ public class PlayerScript : MonoBehaviour
             m_Rigidbody.velocity = new Vector2(horMove * stealthSpeed, -10);
         }
         else m_Rigidbody.velocity = new Vector2(horMove * maxSpeed, -10);
+        
+        m_Animator.SetFloat("Speed", Mathf.Abs(horMove));
 
-        //m_Animator.SetFloat("HorMove", horMove);
+        
     }
 
     void Hide()
@@ -70,14 +75,12 @@ public class PlayerScript : MonoBehaviour
             Physics2D.IgnoreLayerCollision(8, 9, true);
             rend.sortingOrder = 2;
             isHidden = true;
-            Debug.Log("Tried to Hide");
         }//se consegue se esconder, barra de espaço esconde
-        else if(isHidden && canHide && Input.GetKeyDown(KeyCode.Space))
+        else if(isHidden && canHide && Input.GetKeyDown(KeyCode.Space) || isHidden && !canHide)
         {
             Physics2D.IgnoreLayerCollision(8, 9, false);
             rend.sortingOrder = 4;
             isHidden = false;
-            Debug.Log("Came out of hiding willingly");
         }//se está escondido, barra de espaço sai do esconderijo
     }
 
@@ -91,7 +94,14 @@ public class PlayerScript : MonoBehaviour
 
     void Flip()
     {
-        //tbd
+        if(m_Rigidbody.velocity.x > 0)
+        {
+            transform.localScale = new Vector3(-4, 4, 1);
+        }else if (m_Rigidbody.velocity.x < 0)
+        {
+            transform.localScale = new Vector3(4, 4, 1);
+        }
+        
     }
 
     void OnTriggerEnter2D(Collider2D other)
@@ -99,7 +109,6 @@ public class PlayerScript : MonoBehaviour
         if (other.gameObject.CompareTag("Hide"))
         {
             canHide = true;
-            Debug.Log("Can Hide here)");
         }
 
         if (other.gameObject.CompareTag("Transition"))
@@ -124,20 +133,4 @@ public class PlayerScript : MonoBehaviour
         }
 
     }
-    /*Save/Load code section, must go on game manager
-    public void SavePlayer()
-    {
-        SaveSystem.savePlayer(this);
-    }
-
-    public void LoadPlayer()
-    {
-        PlayerData data = SaveSystem.loadPlayer();
-        Vector2 position;
-        position.x = data.playerPos[0];
-        position.y = data.playerPos[1];
-
-        transform.position = position;
-    }
-    */
 }

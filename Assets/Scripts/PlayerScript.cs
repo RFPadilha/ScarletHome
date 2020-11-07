@@ -6,6 +6,8 @@ public class PlayerScript : MonoBehaviour
 {
     //component references
     Rigidbody2D m_Rigidbody;
+    SoundManager soundManager;
+    [SerializeField] GameObject teleportText;
     //Animator m_Animator;
 
     //movement variables
@@ -31,8 +33,11 @@ public class PlayerScript : MonoBehaviour
         m_Rigidbody = GetComponent<Rigidbody2D>();
         m_Animator = GetComponent<Animator>();
         rend = GetComponentInChildren<SpriteRenderer>();
+        soundManager = SoundManager.instance;
+
         
 
+        teleportText.gameObject.SetActive(false);
         canHide = false;
         isHidden = false;
     }
@@ -53,16 +58,16 @@ public class PlayerScript : MonoBehaviour
     }
     void Movement()
     {
-        if (Input.GetKey(KeyCode.LeftShift))
+        m_Rigidbody.velocity = new Vector2(horMove * maxSpeed, -10);
+        if (horMove != 0 && !soundManager.IsPlaying("SmallStep"))
         {
-            m_Rigidbody.velocity = new Vector2(horMove * runSpeed, -10);
+            soundManager.PlaySound("SmallStep");
         }
-        else if (Input.GetKey(KeyCode.LeftControl))
+        if(horMove == 0 && soundManager.IsPlaying("SmallStep"))
         {
-            m_Rigidbody.velocity = new Vector2(horMove * stealthSpeed, -10);
+            soundManager.StopSound("SmallStep");
         }
-        else m_Rigidbody.velocity = new Vector2(horMove * maxSpeed, -10);
-        
+
         m_Animator.SetFloat("Speed", Mathf.Abs(horMove));
 
         
@@ -86,7 +91,11 @@ public class PlayerScript : MonoBehaviour
 
     void Teleport()
     {
-        if(canTeleport && teleport.destination != null && Input.GetKey(KeyCode.Z))
+        if (canTeleport)
+        {
+            teleportText.gameObject.SetActive(true);
+        }else teleportText.gameObject.SetActive(false);
+        if (canTeleport && teleport.destination != null && Input.GetKeyDown(KeyCode.E))
         {
             transform.position = teleport.destination.position;
         }
@@ -115,6 +124,14 @@ public class PlayerScript : MonoBehaviour
         {
             teleport = other.gameObject.GetComponent<TeleportScript>();
             canTeleport = true;
+
+        }
+
+        if (other.gameObject.CompareTag("NoiseArea"))
+        {
+            if (!soundManager.IsPlaying("Dripping")){
+                soundManager.PlayLooped("Dripping");
+            }
         }
 
     }
@@ -130,6 +147,13 @@ public class PlayerScript : MonoBehaviour
         {
             teleport = null;
             canTeleport = false;
+        }
+
+        if (other.gameObject.CompareTag("NoiseArea"))
+        {
+            if (soundManager.IsPlaying("Dripping")){ 
+                soundManager.StopSound("Dripping");
+            }
         }
 
     }

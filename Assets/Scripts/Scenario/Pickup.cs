@@ -1,13 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Pickup : MonoBehaviour
 {
     [SerializeField] GameObject pickupText;//shows text to pickup
     bool pickupAllowed;
     public Interactable textBox;//used for textbox when picked up
-
+    SoundManager soundManager = SoundManager.instance;
+    FadeControl fade;
     public Item item;//used for inventory management
 
     void Start()
@@ -17,7 +19,7 @@ public class Pickup : MonoBehaviour
         if (item != null){
             item.keyItem = GetComponent<Interactable>();
         }
-        
+        fade = FindObjectOfType<FadeControl>();
     }
 
     void Update()
@@ -36,6 +38,15 @@ public class Pickup : MonoBehaviour
         {
             Destroy(gameObject);//removes object from scene
         }
+        if (gameObject.CompareTag("Finish"))
+        {
+            if (!soundManager.IsPlaying("Match"))
+            {
+                soundManager.PlayOneShot("Match");
+                StartCoroutine(EndSequence());
+            }
+            
+        }
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -52,5 +63,12 @@ public class Pickup : MonoBehaviour
             pickupAllowed = false;
             pickupText.gameObject.SetActive(false);
         }
+    }
+
+    IEnumerator EndSequence()
+    {
+        fade.Fade();
+        yield return new WaitForSeconds(2);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
 }

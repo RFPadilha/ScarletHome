@@ -7,6 +7,12 @@ public class PauseMenu : MonoBehaviour
     public static bool gameIsPaused = false;
     public GameObject pauseMenuUI;
 
+    private void Start()
+    {
+        pauseMenuUI.SetActive(false);
+        Time.timeScale = 1f;//resume o jogo efetivamente
+        gameIsPaused = false;
+    }
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -35,20 +41,9 @@ public class PauseMenu : MonoBehaviour
         gameIsPaused = true;
     }
 
-    public void OptionsMenu()
-    {
-        Debug.Log("Options button clicked, levar pra tela de opções");
-    }
-
-    public void SaveMenu()
-    {
-        Debug.Log("Save button clicked, levar pra tela de saves");
-    }
-
     public void QuitGame()
     {
-        Debug.Log("Quit button clicked, perguntar se quita pro menu ou do jogo");
-        //Application.Quit();
+        Application.Quit();
     }
 
 }

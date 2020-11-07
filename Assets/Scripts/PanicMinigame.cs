@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PanicMinigame : MonoBehaviour
 {
@@ -8,6 +9,9 @@ public class PanicMinigame : MonoBehaviour
     [SerializeField] Transform leftPivot;
     [SerializeField] Transform rightPivot;//limits of targets' position
     [SerializeField] Transform target;//the moving target itself
+
+    SoundManager soundManager = SoundManager.instance;
+    
     float targetPosition;
     float targetDestination;
     float targetTimer;
@@ -32,34 +36,33 @@ public class PanicMinigame : MonoBehaviour
     //fim das variáveis de progresso de panico
 
     //variáveis auxiliares
-    bool pause;
+    public bool pause;
     [SerializeField] float failTimer = 1000f;
-    Enemy enemyScript;
     public GameObject Player;
     public GameObject Enemy;
-    float currentDistance;
 
     void Start()
     {
         barSize = playerControl.localScale.x;
         pause = true;
-        enemyScript = FindObjectOfType<Enemy>();
+        gameObject.SetActive(false);
     }
 
     void Update()
     {
-        currentDistance = Vector2.Distance(Player.transform.position, Enemy.transform.position);
-        if (currentDistance <= enemyScript.panicRange)//ativa barra de panico se a criatura estiver muito perto
+        if (!pause)
         {
-            pause = false;
+            if (!soundManager.IsPlaying("Breathing"))
+            {
+                soundManager.PlayLooped("Breathing");
+            }
+            Target();
+            PanicControl();
+            ProgressCheck();
+        }else if (soundManager.IsPlaying("Breathing"))
+        {
+            soundManager.StopSound("Breathing");
         }
-        if (pause) {
-            this.gameObject.SetActive(false);
-            return; 
-        }//se mecânica não for ativada, nada acontece
-        Target();
-        PanicControl();
-        ProgressCheck();
     }
 
     void PanicControl()
@@ -134,12 +137,13 @@ public class PanicMinigame : MonoBehaviour
     void StayCalm()
     {
         pause = true;
-        Debug.Log("Stayed calm, won't have to test again until something extra happens.");
+        barProgress = 0;
+        gameObject.SetActive(false);
     }
 
     void Panic()
     {
         pause = true;
-        Debug.Log("You panicked, the creature is coming after you now, hide and remain calm to stop panicking");
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
 }

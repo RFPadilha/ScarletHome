@@ -8,7 +8,7 @@ public class SettingsMenu : MonoBehaviour
     public AudioMixer audioMixer;
     public void SetVolume(float volume)
     {
-        audioMixer.SetFloat("Volume", volume);
+        audioMixer.SetFloat("Volume", volume * 10);
     }
 
     public void SetFullscreen(bool isFullscreen)

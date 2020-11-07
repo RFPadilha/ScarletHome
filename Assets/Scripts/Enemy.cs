@@ -1,18 +1,21 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Enemy : MonoBehaviour
 {
     public GameObject Player;
-    public GameObject sightDirection;
-    public float panicRange;
-    public float aggroRange;
     public float speed;
+    public float panicRange;
+    public GameObject minigame;
+    SoundManager soundManager = SoundManager.instance;
+    SpriteRenderer rend;
+    public FadeControl fade;
 
     public GameObject text;
 
-    float currentRange;
+    public float currentRange;
     Rigidbody2D m_Rigidbody;
 
     void Start()
@@ -20,23 +23,49 @@ public class Enemy : MonoBehaviour
         text.SetActive(false);
         Player = GameObject.FindGameObjectWithTag("Player");
         m_Rigidbody = GetComponent<Rigidbody2D>();
+        rend = GetComponentInChildren<SpriteRenderer>();
+
+        fade = FindObjectOfType<FadeControl>();
+        rend.sortingOrder = 4;
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-        currentRange = Vector2.Distance(sightDirection.transform.position, Player.transform.position);//calcula a distancia entre player e inimigo
-        if (currentRange <= aggroRange && !Player.GetComponent<PlayerScript>().isHidden)//se está dentro da distância de aggro e o jogador não está escondido:
+        currentRange = Vector2.Distance(transform.position, Player.transform.position);//calcula a distancia entre player e inimigo
+        if (currentRange <= panicRange)//ativa barra de panico se a criatura estiver muito perto
         {
-            Vector2 velocity = new Vector2((transform.position.x - Player.transform.position.x), 0);
-            m_Rigidbody.velocity = -velocity.normalized * speed * 2; ;//corre em direção ao jogador
-        }else m_Rigidbody.velocity = new Vector2(speed, 0);
+            minigame.SetActive(true);
+            minigame.GetComponent<PanicMinigame>().pause = false;
+        }
+
+        if (currentRange <= 15 && !soundManager.IsPlaying("EnemyWalk"))
+        {
+            soundManager.PlayOneShot("EnemyWalk");
+        }
+
+        
+
+
+
+
+        m_Rigidbody.velocity = new Vector2(speed, 0);
+        
+        if (m_Rigidbody.velocity.x > 0)
+        {
+            transform.localScale = new Vector3(1, 1, 1);
+        }
+        else if (m_Rigidbody.velocity.x < 0)
+        {
+            transform.localScale = new Vector3(-1, 1, 1);
+        }
+
+        
     }
     void OnDrawGizmosSelected()
     {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(sightDirection.transform.position, aggroRange);//utilidade para visualizar range de aggro
-
+        
         Gizmos.color = Color.blue;
         Gizmos.DrawWireSphere(gameObject.transform.position, panicRange);//utilidade pra saber quando jogador deve panickar
     }
@@ -49,6 +78,8 @@ public class Enemy : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))
         {
             text.SetActive(true);
+            fade.Fade();
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
         }
     }
 }

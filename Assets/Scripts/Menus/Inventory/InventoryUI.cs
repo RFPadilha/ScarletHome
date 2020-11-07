@@ -10,15 +10,18 @@ public class InventoryUI : MonoBehaviour
     {
         inventory = Inventory.instance;
         inventory.onItemChangedCallback += UpdateUI;//chama a update da UI toda vez que o callback acontece
-
+        inventoryUI.SetActive(false);
         slots = itemsParent.GetComponentsInChildren<InventorySlot>();//referencia aos slots
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.I))
+        if ((Input.GetKeyDown(KeyCode.I) || Input.GetKeyDown(KeyCode.B)) && !inventoryUI.activeSelf)
         {
-            inventoryUI.SetActive(!inventoryUI.activeSelf);
+            inventoryUI.SetActive(true);
+        }else if ((Input.GetKeyDown(KeyCode.I) || Input.GetKeyDown(KeyCode.B) || Input.GetKeyDown(KeyCode.Escape)) && inventoryUI.activeSelf)
+        {
+            inventoryUI.SetActive(false);
         }
     }
 

@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class SoundManager : MonoBehaviour
 {
@@ -13,6 +12,7 @@ public class SoundManager : MonoBehaviour
     {
         public string name;
         public AudioClip clip;
+        public bool isPlaying;
 
         AudioSource source;
         
@@ -25,10 +25,12 @@ public class SoundManager : MonoBehaviour
         public void Play()
         {
             source.Play();
+            isPlaying = true;
         }
         public void Stop()
         {
             source.Stop();
+            isPlaying = false;
         }
         public void PlayOneShot()
         {
@@ -41,6 +43,7 @@ public class SoundManager : MonoBehaviour
         public void PlayLooped()
         {
             source.loop = true;
+            isPlaying = true;
             source.Play();
         }
 
@@ -50,12 +53,13 @@ public class SoundManager : MonoBehaviour
     [SerializeField]
     Sounds[] sound;
 
-    void Awake()
+    private void Awake()
     {
-        DontDestroyOnLoad(this.gameObject);
-        instance = this;
+        if (instance == null)
+        {
+            instance = this;
+        }
     }
-
     void Start()
     {
         for(int i = 0; i<sound.Length; i++)
@@ -65,7 +69,6 @@ public class SoundManager : MonoBehaviour
             sound[i].SetSource(_go.AddComponent<AudioSource>());
         }
         PlaySound("OST");
-        StartCoroutine(StartLoad());
     }
 
     public void PlaySound(string Name)
@@ -122,14 +125,6 @@ public class SoundManager : MonoBehaviour
                 sound[i].PlayLooped();
                 return;
             }
-        }
-    }
-    IEnumerator StartLoad()
-    {
-        AsyncOperation operation = SceneManager.LoadSceneAsync(1);
-        while (!operation.isDone)
-        {
-            yield return null;
         }
     }
 }

@@ -21,12 +21,10 @@ public class TutorialOverlay : MonoBehaviour
 
             if (!overlay.activeSelf)
             {
-                Debug.Log("Should have opened overlay");
                 overlay.SetActive(true);
             }
             else if (overlay.activeSelf)
             {
-                Debug.Log("Should have closed overlay");
                 overlay.SetActive(false);
             }
         }

@@ -27,7 +27,6 @@ public class DialogueManager : MonoBehaviour
         foreach(string sentence in dialogue.sentences)
         {
             sentences.Enqueue(sentence);//encadeia as frases do interagivel
-
         }
 
         DisplayNextSentence();
@@ -40,7 +39,6 @@ public class DialogueManager : MonoBehaviour
             EndDialogue();//encerra dialogo se nao existem mais frases
             return;
         }
-
         string sentence = sentences.Dequeue();//remove frase dita
         StopAllCoroutines();//garante que não há frases sendo digitadas
         StartCoroutine(TypeSentence(sentence));//digita nova frase

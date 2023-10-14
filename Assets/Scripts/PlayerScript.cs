@@ -7,8 +7,7 @@ public class PlayerScript : MonoBehaviour
     //component references
     Rigidbody2D m_Rigidbody;
     SoundManager soundManager;
-    [SerializeField] GameObject teleportText;
-    //Animator m_Animator;
+    [SerializeField] GameObject switchRoomsText;
 
     //movement variables
     public float horMove = 0f;
@@ -18,14 +17,14 @@ public class PlayerScript : MonoBehaviour
 
     //hiding variables
     SpriteRenderer rend;
-    bool canHide;
+    public bool canHide;
     public bool isHidden;
 
     //transition variables
-    public bool canTeleport;
+    public bool canExitRoom;
     public bool facingRight;
     public Animator m_Animator;
-    TeleportScript teleport;
+    TeleportScript door;
 
     
     void Start()
@@ -35,11 +34,12 @@ public class PlayerScript : MonoBehaviour
         rend = GetComponentInChildren<SpriteRenderer>();
         soundManager = SoundManager.instance;
 
-        
-
-        teleportText.gameObject.SetActive(false);
+        switchRoomsText.gameObject.SetActive(false);
         canHide = false;
         isHidden = false;
+
+
+        FadeControl.instance.FadeIn(5);
     }
 
     void Update()
@@ -47,25 +47,24 @@ public class PlayerScript : MonoBehaviour
         horMove = Input.GetAxisRaw("Horizontal");
         facingRight = false;
         Hide();
-
     }
 
     void FixedUpdate()
     {
         Movement();
-        Flip();
-        Teleport();
+        FlipSprites();
+        ExitRoom();
     }
     void Movement()
     {
         m_Rigidbody.velocity = new Vector2(horMove * maxSpeed, -10);
-        if (horMove != 0 && !soundManager.IsPlaying("SmallStep"))
+        if (horMove != 0 && !soundManager.IsPlaying("MediumStep"))
         {
-            soundManager.PlaySound("SmallStep");
+            soundManager.PlaySound("MediumStep");
         }
-        if(horMove == 0 && soundManager.IsPlaying("SmallStep"))
+        if(horMove == 0 && soundManager.IsPlaying("MediumStep"))
         {
-            soundManager.StopSound("SmallStep");
+            soundManager.StopSound("MediumStep");
         }
 
         m_Animator.SetFloat("Speed", Mathf.Abs(horMove));
@@ -84,24 +83,32 @@ public class PlayerScript : MonoBehaviour
         else if(isHidden && canHide && Input.GetKeyDown(KeyCode.Space) || isHidden && !canHide)
         {
             Physics2D.IgnoreLayerCollision(8, 9, false);
-            rend.sortingOrder = 4;
+            rend.sortingOrder = 5;
             isHidden = false;
         }//se está escondido, barra de espaço sai do esconderijo
     }
 
-    void Teleport()
+    void ExitRoom()
     {
-        if (canTeleport)
+        if (canExitRoom)
         {
-            teleportText.gameObject.SetActive(true);
-        }else teleportText.gameObject.SetActive(false);
-        if (canTeleport && teleport.destination != null && Input.GetKeyDown(KeyCode.E))
+            switchRoomsText.gameObject.SetActive(true);
+        }else switchRoomsText.gameObject.SetActive(false);
+
+        if (canExitRoom && door.destination != null && Input.GetKeyDown(KeyCode.E))
         {
-            transform.position = teleport.destination.position;
+            StartCoroutine(TransportPlayer(door.destination));
         }
     }
-
-    void Flip()
+    IEnumerator TransportPlayer(Transform destination)
+    {
+        FadeControl.instance.FadeToBlack(6);
+        SoundManager.instance.PlayOneShot("OpenDoor");
+        yield return new WaitForSeconds(1);
+        transform.position = destination.position;
+        FadeControl.instance.FadeIn(6);
+    }
+    void FlipSprites()
     {
         if(m_Rigidbody.velocity.x > 0)
         {
@@ -110,7 +117,6 @@ public class PlayerScript : MonoBehaviour
         {
             transform.localScale = new Vector3(4, 4, 1);
         }
-        
     }
 
     void OnTriggerEnter2D(Collider2D other)
@@ -122,9 +128,8 @@ public class PlayerScript : MonoBehaviour
 
         if (other.gameObject.CompareTag("Transition"))
         {
-            teleport = other.gameObject.GetComponent<TeleportScript>();
-            canTeleport = true;
-
+            door = other.gameObject.GetComponent<TeleportScript>();
+            canExitRoom = true;
         }
 
         if (other.gameObject.CompareTag("NoiseArea"))
@@ -140,13 +145,12 @@ public class PlayerScript : MonoBehaviour
         if (other.gameObject.CompareTag("Hide"))
         {
             canHide = false;
-
         }
 
         if (other.gameObject.CompareTag("Transition"))
         {
-            teleport = null;
-            canTeleport = false;
+            door = null;
+            canExitRoom = false;
         }
 
         if (other.gameObject.CompareTag("NoiseArea"))

@@ -5,70 +5,48 @@ using UnityEngine.UI;
 
 public class FadeControl : MonoBehaviour
 {
-    public bool fade; // Which key should trigger the fade?
-    public float speedScale = 1f;
-    public Color fadeColor = Color.black;
-    // Rather than Lerp or Slerp, we allow adaptability with a configurable curve
-    public AnimationCurve Curve = new AnimationCurve(new Keyframe(0, 1),
-        new Keyframe(0.5f, 0.5f, -1.5f, -1.5f), new Keyframe(1, 0));
-    public bool startFadedOut = false;
+    public static FadeControl instance = null;
 
+    [SerializeField] Image fadeBlack;
 
-    private float alpha = 0f;
-    private Texture2D texture;
-    private int direction = 0;
-    private float time = 0f;
-
-    private void Start()
+    private void Awake()
     {
-        fade = false;
-        if (startFadedOut) alpha = 1f; else alpha = 0f;
-        texture = new Texture2D(1, 1);
-        texture.SetPixel(0, 0, new Color(fadeColor.r, fadeColor.g, fadeColor.b, alpha));
-        texture.Apply();
-    }
-
-    private void Update()
-    {
-        if (direction == 0 && fade)
+        if(instance == null)
         {
-            if (alpha >= 1f) // Fully faded out
-            {
-                alpha = 1f;
-                time = 0f;
-                direction = 1;
-            }
-            else // Fully faded in
-            {
-                alpha = 0f;
-                time = 1f;
-                direction = -1;
-            }
-
+            instance = this;
         }
     }
-    public void OnGUI()
+    public void FadeToBlack(float speed)
     {
-        if (alpha > 0f) GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), texture);
-        if (direction != 0)
+        StartCoroutine(Fade(1, speed));
+    }
+    public void FadeIn(float speed)
+    {
+        StartCoroutine(Fade(0, speed));
+    }
+    public IEnumerator Fade(int value, float speed)//1 for fade to black, 0 to fade in
+    {
+        if(value == 1)
         {
-            time += direction * Time.deltaTime * speedScale;
-            alpha = Curve.Evaluate(time);
-            texture.SetPixel(0, 0, new Color(fadeColor.r, fadeColor.g, fadeColor.b, alpha));
-            texture.Apply();
-            if (alpha <= 0f || alpha >= 1f)
+            while (fadeBlack.color.a < 1)
             {
-                direction = 0;
-                StopFade();
+                fadeBlack.color = new Color(fadeBlack.color.r, fadeBlack.color.g, fadeBlack.color.g, fadeBlack.color.a + (Time.deltaTime * speed));
+                yield return 0;
+            }
+        }else
+        {
+            while (fadeBlack.color.a > 0)
+            {
+                fadeBlack.color = new Color(fadeBlack.color.r, fadeBlack.color.g, fadeBlack.color.g, fadeBlack.color.a - (Time.deltaTime * speed));
+                yield return 0;
             }
         }
+        
     }
-    public void Fade()
+    public IEnumerator QuickFade(float speed)
     {
-        fade = true;
-    }
-    void StopFade()
-    {
-        fade = false;
+        StartCoroutine(Fade(1, speed));
+        yield return new WaitForSeconds(1);
+        StartCoroutine(Fade(0, speed));
     }
 }

@@ -6,12 +6,15 @@ using UnityEngine.SceneManagement;
 public class PanicMinigame : MonoBehaviour
 {
     //target variables
+    [Header("Minigame Position Objects")]
+    public  GameObject panicUI;
     [SerializeField] Transform leftPivot;
     [SerializeField] Transform rightPivot;//limits of targets' position
     [SerializeField] Transform target;//the moving target itself
 
-    SoundManager soundManager = SoundManager.instance;
+    SoundManager soundManager;
     
+    [Header("Target Control Variables")]
     float targetPosition;
     float targetDestination;
     float targetTimer;
@@ -19,53 +22,63 @@ public class PanicMinigame : MonoBehaviour
     float targetSpeed;
     [SerializeField] float smoothMotion = 1f;
     //end of target variables
-
-    //Panic control variables
-    [SerializeField] Transform playerControl;//referência a barra que vai ser movida
+    
+    [Header("Player Control Variables")]
+    [SerializeField] Transform playerBar;//referência a barra que vai ser movida
     float barPosition;
     [SerializeField] float barSize;
     float barMoveVelocity;//a velocidade da barra em si
     [SerializeField] float barMovePower = 0.03f;//a "força" aplicada para a barra se mexer
-    //end of panic control variables
 
     //Variáveis de progresso de panico
     [SerializeField] Transform progressBar;//referência a barra de progresso
     float barProgress;
     [SerializeField] float barPower = 0.0000001f;//determina a velocidade de progresso
-    [SerializeField] float barDegradationPower = 0.1f;//a velocidade que a barra de progresso retrocede
+    [SerializeField] float barDegradationPower = 0.05f;//a velocidade que a barra de progresso retrocede
     //fim das variáveis de progresso de panico
 
     //variáveis auxiliares
-    public bool pause;
-    [SerializeField] float failTimer = 1000f;
-    public GameObject Player;
-    public GameObject Enemy;
+    public static bool activePanic;
+    bool activeGame = false;
+    public float calmDuration = 10f;
+    float elapsedCalm = 0f;
 
     void Start()
     {
-        barSize = playerControl.localScale.x;
-        pause = true;
-        gameObject.SetActive(false);
+        soundManager = SoundManager.instance;
+        barSize = playerBar.localScale.x;
+        activePanic = false;
+        panicUI.SetActive(false);
     }
 
     void Update()
     {
-        if (!pause)
+        if (activePanic && elapsedCalm <= 0)
         {
+            if (!activeGame)
+            {
+                activeGame = true;
+                panicUI.SetActive(true);
+            }
             if (!soundManager.IsPlaying("Breathing"))
             {
                 soundManager.PlayLooped("Breathing");
             }
-            Target();
-            PanicControl();
+            RandomizeTargetMovement();
+            PanicBarControl();
             ProgressCheck();
         }else if (soundManager.IsPlaying("Breathing"))
         {
             soundManager.StopSound("Breathing");
         }
+        if (elapsedCalm > 0)
+        {
+            elapsedCalm -= Time.deltaTime;
+        }
+        
     }
 
-    void PanicControl()
+    void PanicBarControl()
     {
         if (Input.GetMouseButton(0))//move para a direita
         {
@@ -85,10 +98,10 @@ public class PanicMinigame : MonoBehaviour
         }
 
         barPosition = Mathf.Clamp(barPosition, barSize / 2, 1 - (barSize / 2));
-        playerControl.position = Vector2.Lerp(leftPivot.position, rightPivot.position, barPosition);
+        playerBar.position = Vector2.Lerp(leftPivot.position, rightPivot.position, barPosition);
     }
 
-    void Target()
+    void RandomizeTargetMovement()
     {
         targetTimer -= Time.deltaTime;
         if (targetTimer < 0f)
@@ -117,9 +130,8 @@ public class PanicMinigame : MonoBehaviour
         else
         {
             barProgress -= barDegradationPower * Time.deltaTime;//se não, panica
-
-            failTimer -= Time.deltaTime;
-            if (failTimer < 0)
+            
+            if (barProgress <= 0)
             {
                 Panic();
             }
@@ -136,14 +148,22 @@ public class PanicMinigame : MonoBehaviour
 
     void StayCalm()
     {
-        pause = true;
+        activePanic = false;
         barProgress = 0;
-        gameObject.SetActive(false);
+        panicUI.SetActive(false);
+        activeGame = false;
+        elapsedCalm = calmDuration;
     }
 
     void Panic()
     {
-        pause = true;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        activePanic = false;
+        SceneManager.LoadScene(5);
+        Debug.Log("Game should end because player panicked");
+    }
+
+    public static void TriggerMinigame()
+    {
+        activePanic = true;
     }
 }

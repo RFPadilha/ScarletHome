@@ -18,7 +18,7 @@ public class Intro : MonoBehaviour
     }
 
     IEnumerator WaitABit(){
-        yield return new WaitForSeconds(10);
+        yield return new WaitForSeconds(5);
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
     

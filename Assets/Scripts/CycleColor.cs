@@ -4,12 +4,15 @@ using UnityEngine;
 
 public class CycleColor : MonoBehaviour
 {
-    LabPuzzle puzzle;
     [SerializeField] GameObject cycleText;//shows text to cycle
+    [SerializeField] LabPuzzle controller;
+    public int color;//0 to 6, in order of the rainbow
+    public SpriteRenderer spriteRenderer;
     bool cycleAllowed;
+
+
     void Start()
     {
-        puzzle = FindObjectOfType<LabPuzzle>();
         cycleText.gameObject.SetActive(false);
     }
 
@@ -18,13 +21,9 @@ public class CycleColor : MonoBehaviour
     {
         if (cycleAllowed && Input.GetKeyDown(KeyCode.E))//checks overlapping with flask and key pressed
         {
-            puzzle.trigger = this.gameObject.tag;
-            puzzle.Cycle();
+            controller.NextColor(this);
         }
     }
-    
-
-
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Player"))

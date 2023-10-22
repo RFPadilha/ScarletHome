@@ -5,28 +5,26 @@ using UnityEngine.SceneManagement;
 
 public class Enemy : MonoBehaviour
 {
-    public GameObject Player;
     public float speed;
     public float panicRange;
-    public GameObject minigame;
-    SoundManager soundManager = SoundManager.instance;
-    SpriteRenderer rend;
-    public FadeControl fade;
-
-    public GameObject text;
-
     public float currentRange;
+    
+    GameObject Player;
+    
+    SpriteRenderer rend;
     Rigidbody2D m_Rigidbody;
+    SoundManager soundManager;
+    
 
     void Start()
     {
-        text.SetActive(false);
-        Player = GameObject.FindGameObjectWithTag("Player");
-        m_Rigidbody = GetComponent<Rigidbody2D>();
+        Player = GameObject.FindGameObjectWithTag("Player");//referencia o jogador
+        soundManager = SoundManager.instance;
+        m_Rigidbody = GetComponent<Rigidbody2D>();//componentes do unity
         rend = GetComponentInChildren<SpriteRenderer>();
-
-        fade = FindObjectOfType<FadeControl>();
         rend.sortingOrder = 4;
+        
+        
         
     }
 
@@ -36,50 +34,48 @@ public class Enemy : MonoBehaviour
         currentRange = Vector2.Distance(transform.position, Player.transform.position);//calcula a distancia entre player e inimigo
         if (currentRange <= panicRange)//ativa barra de panico se a criatura estiver muito perto
         {
-            minigame.SetActive(true);
-            minigame.GetComponent<PanicMinigame>().pause = false;
+            PanicMinigame.TriggerMinigame();
         }
 
-        if (currentRange <= 15 && !soundManager.IsPlaying("EnemyWalk"))
+        if (currentRange <= 10)
         {
-            soundManager.PlayOneShot("EnemyWalk");
+            if (!soundManager.IsPlaying("EnemyWalk")) soundManager.PlayOneShot("EnemyWalk");
+
+            m_Rigidbody.velocity = new Vector2(speed, 0);
+
+            if (m_Rigidbody.velocity.x > 0)
+            {
+                transform.localScale = new Vector3(-1, 1, 1);
+            }
+            else if (m_Rigidbody.velocity.x < 0)
+            {
+                transform.localScale = new Vector3(1, 1, 1);
+
+            }
+
         }
-
-        
-
+        else m_Rigidbody.velocity = Vector2.zero;//limita movimentação do inimigo somente quando jogador estiver perto
 
 
-
-        m_Rigidbody.velocity = new Vector2(speed, 0);
-        
-        if (m_Rigidbody.velocity.x > 0)
-        {
-            transform.localScale = new Vector3(1, 1, 1);
-        }
-        else if (m_Rigidbody.velocity.x < 0)
-        {
-            transform.localScale = new Vector3(-1, 1, 1);
-        }
-
-        
     }
     void OnDrawGizmosSelected()
     {
-        
         Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(gameObject.transform.position, panicRange);//utilidade pra saber quando jogador deve panickar
+        Gizmos.DrawWireSphere(gameObject.transform.position, panicRange);//utilidade visual do editor
     }
+
     void OnCollisionEnter2D(Collision2D other)
     {
         if (other.gameObject.CompareTag("Bounds"))
         {
             speed = -speed;
-        }
+        }//inverte movimento se não tiver pra onde ir
+
         if (other.gameObject.CompareTag("Player"))
         {
-            text.SetActive(true);
-            fade.Fade();
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-        }
+            FadeControl.instance.FadeToBlack(1);
+            GameManager.LoadScene("Death");//getting caught means game over
+            Debug.Log("Game should end because player died");
+        }//game over
     }
 }

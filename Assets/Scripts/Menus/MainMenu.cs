@@ -8,15 +8,15 @@ public class MainMenu : MonoBehaviour
 
     SoundManager soundManager = SoundManager.instance;
     bool startGame = false;
-    public FadeControl fade;
+
     private void Start()
     {
-        fade = FindObjectOfType<FadeControl>();
+        if (SceneManager.GetActiveScene().buildIndex == 4) soundManager.PlaySound("Burning");
     }
 
     public void newGame()
     {
-        fade.Fade();
+        FadeControl.instance.FadeToBlack(3);
         soundManager.PlaySound("Thunder");
         StartCoroutine(Play());
     }
@@ -31,7 +31,7 @@ public class MainMenu : MonoBehaviour
     }
     public void Restart()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
+        SceneManager.LoadScene(3);
     }
     IEnumerator Play()
     {

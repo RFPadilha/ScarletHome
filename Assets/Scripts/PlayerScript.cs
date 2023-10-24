@@ -58,13 +58,13 @@ public class PlayerScript : MonoBehaviour
     void Movement()
     {
         m_Rigidbody.velocity = new Vector2(horMove * maxSpeed, -10);
-        if (horMove != 0 && !soundManager.IsPlaying("MediumStep"))
+        if (horMove != 0 && !soundManager.IsPlaying("SmallStep"))
         {
-            soundManager.PlaySound("MediumStep");
+            soundManager.PlaySound("SmallStep");
         }
-        if(horMove == 0 && soundManager.IsPlaying("MediumStep"))
+        if(horMove == 0 && soundManager.IsPlaying("SmallStep"))
         {
-            soundManager.StopSound("MediumStep");
+            soundManager.StopSound("SmallStep");
         }
 
         m_Animator.SetFloat("Speed", Mathf.Abs(horMove));
@@ -103,7 +103,9 @@ public class PlayerScript : MonoBehaviour
     IEnumerator TransportPlayer(Transform destination)
     {
         FadeControl.instance.FadeToBlack(6);
-        SoundManager.instance.PlayOneShot("OpenDoor");
+        if(soundManager.IsPlaying("Monster")) soundManager.StopSound("Monster");
+        if (soundManager.IsPlaying("EnemyWalk")) soundManager.StopSound("EnemyWalk");
+        soundManager.PlayOneShot("OpenDoor");
         yield return new WaitForSeconds(1);
         transform.position = destination.position;
         FadeControl.instance.FadeIn(6);

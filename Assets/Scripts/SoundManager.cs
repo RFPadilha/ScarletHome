@@ -20,6 +20,7 @@ public class SoundManager : MonoBehaviour
         {
             source = _source;
             source.clip = clip;
+            source.playOnAwake = false;
         }
 
         public void Play()
@@ -68,7 +69,7 @@ public class SoundManager : MonoBehaviour
             _go.transform.SetParent(this.transform);
             sound[i].SetSource(_go.AddComponent<AudioSource>());
         }
-        PlaySound("OST");
+        PlayLooped("OST");
     }
 
     public void PlaySound(string Name)

@@ -8,12 +8,15 @@ public class Enemy : MonoBehaviour
     public float speed;
     public float panicRange;
     public float currentRange;
+
+    bool activeEnemy = false;
     
     GameObject Player;
     
     SpriteRenderer rend;
     Rigidbody2D m_Rigidbody;
     SoundManager soundManager;
+
     
 
     void Start()
@@ -23,9 +26,7 @@ public class Enemy : MonoBehaviour
         m_Rigidbody = GetComponent<Rigidbody2D>();//componentes do unity
         rend = GetComponentInChildren<SpriteRenderer>();
         rend.sortingOrder = 4;
-        
-        
-        
+
     }
 
     // Update is called once per frame
@@ -34,12 +35,16 @@ public class Enemy : MonoBehaviour
         currentRange = Vector2.Distance(transform.position, Player.transform.position);//calcula a distancia entre player e inimigo
         if (currentRange <= panicRange)//ativa barra de panico se a criatura estiver muito perto
         {
+            activeEnemy = true;
             PanicMinigame.TriggerMinigame();
-        }
-
-        if (currentRange <= 10)
-        {
-            if (!soundManager.IsPlaying("EnemyWalk")) soundManager.PlayOneShot("EnemyWalk");
+            if (!soundManager.IsPlaying("Monster"))
+            {
+                soundManager.PlaySound("Monster");
+            }
+            if (!soundManager.IsPlaying("EnemyWalk"))
+            {
+                soundManager.PlaySound("EnemyWalk");
+            }
 
             m_Rigidbody.velocity = new Vector2(speed, 0);
 
@@ -52,11 +57,12 @@ public class Enemy : MonoBehaviour
                 transform.localScale = new Vector3(1, 1, 1);
 
             }
-
         }
-        else m_Rigidbody.velocity = Vector2.zero;//limita movimentação do inimigo somente quando jogador estiver perto
-
-
+        else
+        {
+            activeEnemy = false;
+            m_Rigidbody.velocity = Vector2.zero;//limita movimentação do inimigo somente quando jogador estiver perto
+        }
     }
     void OnDrawGizmosSelected()
     {

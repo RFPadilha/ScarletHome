@@ -193,23 +193,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sound:
-  - name: Rain
-    clip: {fileID: 8300000, guid: 74f4efa7774a054419d8fa87702bd318, type: 3}
-    isPlaying: 0
-  - name: VentWalk
-    clip: {fileID: 8300000, guid: 09f2b9e64cd492745b2907277ceecac3, type: 3}
-    isPlaying: 0
   - name: EnemyWalk
     clip: {fileID: 8300000, guid: 817c32ce809eafb469794b0707c18025, type: 3}
     isPlaying: 0
   - name: OST
-    clip: {fileID: 8300000, guid: e5cc39050b087f943944cc100eafa390, type: 3}
+    clip: {fileID: 8300000, guid: 9c65987ca2bec0940aed393b2c42d08a, type: 3}
     isPlaying: 0
   - name: Burning
     clip: {fileID: 8300000, guid: feb2bf2e85968ba44ac5864790e3176a, type: 3}
     isPlaying: 0
   - name: Match
-    clip: {fileID: 8300000, guid: c4cb9b3445139d949a1d200d51a20a51, type: 3}
+    clip: {fileID: 8300000, guid: 405d3c6ce0c6d8f469762f71464a6938, type: 3}
     isPlaying: 0
   - name: Dripping
     clip: {fileID: 8300000, guid: 2bd2a59d0453d5c4a91a83048859625f, type: 3}
@@ -217,29 +211,23 @@ MonoBehaviour:
   - name: Monster
     clip: {fileID: 8300000, guid: 11379d7d798412b47af4ce9b1591116c, type: 3}
     isPlaying: 0
-  - name: MediumStep
-    clip: {fileID: 8300000, guid: 520856a458d955a4b8ffff84f3a9f1e5, type: 3}
-    isPlaying: 0
   - name: SmallStep
     clip: {fileID: 8300000, guid: 1db5e6f1ec0d3d44eb166d4c0305ec86, type: 3}
     isPlaying: 0
   - name: Glass
     clip: {fileID: 8300000, guid: 1400ce1d4ccbf9c4eac43d8abe2d9327, type: 3}
     isPlaying: 0
-  - name: Creaky
-    clip: {fileID: 8300000, guid: 5fe51d441a087a74cbd95c3b150a16f8, type: 3}
-    isPlaying: 0
   - name: OpenDoor
-    clip: {fileID: 8300000, guid: 3b83094f5645e49449d30b589cf44ce3, type: 3}
+    clip: {fileID: 8300000, guid: 01e3948a20f7a144ea8d7f9da9eb1925, type: 3}
     isPlaying: 0
   - name: Breathing
     clip: {fileID: 8300000, guid: 61022d077caaaba409acd5e77781ddb5, type: 3}
     isPlaying: 0
   - name: Thunder
-    clip: {fileID: 8300000, guid: 1f7a831f26ddb62439ac04f79a671f86, type: 3}
+    clip: {fileID: 8300000, guid: 251cab825f0f8cc45b69b29ea1aae5ef, type: 3}
     isPlaying: 0
   - name: OpenVent
-    clip: {fileID: 8300000, guid: 59055f41a017a1642ab5af4ba5381b34, type: 3}
+    clip: {fileID: 8300000, guid: 49ed5094ca3885b479bede2051b36048, type: 3}
     isPlaying: 0
 --- !u!1 &1129625048
 GameObject:

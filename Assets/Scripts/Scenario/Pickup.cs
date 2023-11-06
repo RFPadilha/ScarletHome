@@ -41,10 +41,9 @@ public class Pickup : MonoBehaviour
             {
                 soundManager.PlayOneShot("Match");//plays sound once
                 StartCoroutine(EndSequence());//starts routine to end the game
-                SceneManager.LoadScene(4);
             }
         }
-        if (wasPickedUp)//if interaction happened:
+        if (wasPickedUp && !gameObject.CompareTag("Finish"))//if interaction happened:
         {
             Destroy(gameObject);//removes object from scene
         }
@@ -68,7 +67,9 @@ public class Pickup : MonoBehaviour
 
     IEnumerator EndSequence()
     {
+        soundManager.PlaySound("Burning");
         FadeControl.instance.FadeToBlack(3);
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(2);
+        SceneManager.LoadScene(4);
     }
 }

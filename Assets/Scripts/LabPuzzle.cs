@@ -42,7 +42,7 @@ public class LabPuzzle : MonoBehaviour
     {
         soundManager.PlayOneShot("OpenVent");
         FadeControl.instance.FadeToBlack(3);
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(4);
         player.transform.position = finalDestination.position;
         FadeControl.instance.FadeIn(3);
     }

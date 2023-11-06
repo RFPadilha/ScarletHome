@@ -5,20 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class Intro : MonoBehaviour
 {
-    [SerializeField]
-    GameObject[] texts;
-    void Start()
-    {
-        foreach(GameObject text in texts){
-            text.SetActive(true);
-        }
-        StartCoroutine(WaitABit());
-
-
-    }
-
-    IEnumerator WaitABit(){
-        yield return new WaitForSeconds(5);
+    public void NextScene() {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
     

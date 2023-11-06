@@ -40,6 +40,7 @@ public class PlayerScript : MonoBehaviour
 
 
         FadeControl.instance.FadeIn(5);
+        if (soundManager.IsPlaying("Burning")) soundManager.StopSound("Burning");
     }
 
     void Update()

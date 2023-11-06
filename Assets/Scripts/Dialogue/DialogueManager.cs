@@ -11,6 +11,8 @@ public class DialogueManager : MonoBehaviour
     public Animator animator;//referencia a animação de aparição da caixa
 
     private Queue<string> sentences;//referencia as frases dos objetos interagiveis
+    public bool isTyping = false;
+    string sentence;
     void Start()
     {
         sentences = new Queue<string>();//inicializa
@@ -34,24 +36,35 @@ public class DialogueManager : MonoBehaviour
 
     public void DisplayNextSentence()
     {
-        if (sentences.Count == 0)
+        if (sentences.Count == 0 && !isTyping)
         {
             EndDialogue();//encerra dialogo se nao existem mais frases
             return;
         }
-        string sentence = sentences.Dequeue();//remove frase dita
-        StopAllCoroutines();//garante que não há frases sendo digitadas
-        StartCoroutine(TypeSentence(sentence));//digita nova frase
+        if (!isTyping)
+        {
+            sentence = sentences.Dequeue();//remove frase dita
+            StopAllCoroutines();//garante que não há frases sendo digitadas
+            StartCoroutine(TypeSentence(sentence));//digita nova frase
+        }
+        else
+        {
+            StopAllCoroutines();
+            dialogueText.text = sentence;
+            isTyping = false;
+        }
     }
 
     IEnumerator TypeSentence (string sentence)
     {
+        isTyping = true;
         dialogueText.text = "";
         foreach(char letter in sentence.ToCharArray())
         {
             dialogueText.text += letter;//adiciona letras uma a uma ao vetor
             yield return null;
         }
+        isTyping = false;
     }
 
     void EndDialogue()

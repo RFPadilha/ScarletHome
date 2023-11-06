@@ -8,6 +8,7 @@ public class PanicMinigame : MonoBehaviour
     //target variables
     [Header("Minigame Position Objects")]
     public  GameObject panicUI;
+    public GameObject panicTutorial;
     [SerializeField] Transform leftPivot;
     [SerializeField] Transform rightPivot;//limits of targets' position
     [SerializeField] Transform target;//the moving target itself
@@ -32,6 +33,7 @@ public class PanicMinigame : MonoBehaviour
 
     //Variáveis de progresso de panico
     [SerializeField] Transform progressBar;//referência a barra de progresso
+    public float startingBarProgress;
     float barProgress;
     [SerializeField] float barPower = 0.0000001f;//determina a velocidade de progresso
     [SerializeField] float barDegradationPower = 0.05f;//a velocidade que a barra de progresso retrocede
@@ -42,13 +44,16 @@ public class PanicMinigame : MonoBehaviour
     bool activeGame = false;
     public float calmDuration = 10f;
     float elapsedCalm = 0f;
+    bool firstPanic = true;
 
     void Start()
     {
+        firstPanic = true;
         soundManager = SoundManager.instance;
         barSize = playerBar.localScale.x;
         activePanic = false;
         panicUI.SetActive(false);
+        panicTutorial.SetActive(false);
     }
 
     void Update()
@@ -57,6 +62,11 @@ public class PanicMinigame : MonoBehaviour
         {
             if (!activeGame)
             {
+                if (firstPanic)
+                {
+                    ShowPanicTutorial();
+                }
+                barProgress = startingBarProgress;
                 activeGame = true;
                 panicUI.SetActive(true);
             }
@@ -73,11 +83,22 @@ public class PanicMinigame : MonoBehaviour
         }
         if (elapsedCalm > 0)
         {
+            activePanic = false;
             elapsedCalm -= Time.deltaTime;
         }
         
     }
-
+    public void ClosePanicTutorial()
+    {
+        Time.timeScale = 1f;
+        firstPanic = false;
+        panicTutorial.SetActive(false);
+    }
+    public void ShowPanicTutorial()
+    {
+        panicTutorial.SetActive(true);
+        Time.timeScale = 0f;
+    }
     void PanicBarControl()
     {
         if (Input.GetMouseButton(0))//move para a direita

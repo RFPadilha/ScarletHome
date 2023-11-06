@@ -6,12 +6,14 @@ using UnityEngine.SceneManagement;
 public class MainMenu : MonoBehaviour
 {
 
-    SoundManager soundManager = SoundManager.instance;
+    SoundManager soundManager;
     bool startGame = false;
 
     private void Start()
     {
+        soundManager = SoundManager.instance;
         if (SceneManager.GetActiveScene().buildIndex == 4) soundManager.PlaySound("Burning");
+        else if (soundManager.IsPlaying("Burning")) soundManager.StopSound("Burning");
     }
 
     public void newGame()
